@@ -1,3 +1,7 @@
 node_modules/
 .mabbux/state/
 .DS_Store
+.env
+.env.*
+!.env.example
+.claude/settings.local.json

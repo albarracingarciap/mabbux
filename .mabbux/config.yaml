@@ -1,0 +1,59 @@
+# Configuración del harness para el propio repositorio de mabbux.
+# Hoy se mantiene a mano; en el futuro la generará `mabbux init`.
+# Se comete en git.
+
+version: 1
+
+project:
+  name: mabbux
+  description: Harness gobernable para agentes de código
+  kind: cli-tool            # cli-tool | web-app | library | service
+  language: typescript
+  runtime: node-24-lts
+
+# Respuestas del onboarding
+onboarding:
+  technical_level: technical   # technical | mixed | non-technical
+  reply_language: es           # idioma de las respuestas del agente
+  code_language: en            # idioma del código, comentarios y commits
+  team_mode: solo              # solo | team
+  git_flow: pull-requests      # direct-main | pull-requests
+
+# Asistentes para los que se generan adaptadores
+assistants:
+  - claude-code
+  - copilot
+
+# Carriles de trabajo
+lanes:
+  default: change              # answer | change | spec
+  # Rutas en las que cualquier cambio exige una spec aprobada
+  spec_required_paths:
+    - "packages/core/src/policy/**"     # el motor de políticas
+    - "packages/core/src/evidence/**"   # el registro de evidencias
+    - "scripts/mabbux/**"               # el harness manual
+    - ".github/workflows/**"            # la garantía de CI
+    - ".mabbux/config.yaml"             # esta misma configuración
+
+# Memoria del proyecto
+knowledge:
+  root: knowledge/
+  format: okf-0.1
+  # Hasta que existan anclajes por símbolo, se usa hash de fichero
+  anchors: file-hash           # file-hash | symbol
+  block_on_stale: []           # en el MVP solo avisa; más adelante [accepted]
+
+# Evidencias
+evidence:
+  ledger: .mabbux/state/evidencias.jsonl
+  required_for: [change, spec]
+
+# Telemetría local
+telemetry:
+  enabled: true
+  exporter: file               # file | otlp
+  path: .mabbux/state/telemetry/
+  capture_content: false       # nunca guardar prompts ni respuestas
+
+# Skills: ninguna el primer día; se añaden cuando algo se repite tres veces
+skills: []
